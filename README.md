@@ -1,3 +1,7 @@
+
+[![Release date](https://img.shields.io/github/release-date/engrmafzaalch/vscode-google-calendar)](https://packagist.org/packages/engrmafzaalch/vscode-google-calendar)
+
+
 # VsCode Google Calendar Extension 
 
 Integrates VsCode Google Calendar Extension into VS Code. If you are new to VsCode Google Calendar Extension check the documentation.

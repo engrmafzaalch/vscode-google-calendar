@@ -1,0 +1,48 @@
+{
+  "name": "google-calendar-inegration",
+  "displayName": "VsCode Google Calendar ",
+  "description": "It allows to you to sync your google calendar with VS Code",
+  "publisher": "RigRex",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": ".git",
+    "url": "https://github.com/engrmafzaalch/vscode-google-calendar.git"
+  },
+  "version": "0.0.3",
+  "engines": {
+    "vscode": "^1.56.0"
+  },
+  "keywords": ["google", "calendar", "Google Calendar VS Code", "google calendar", "vscode calendar"],
+  "categories": [
+    "Other",
+    "Visualization", "Notebooks", "Education"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "galleryBanner": {
+    "color": "#3262a9",
+    "theme": "dark"
+  },
+  "main": "./extension.js",
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "yarn run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.56.0",
+    "eslint": "^7.19.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.2.1",
+    "typescript": "^4.1.3",
+    "vscode-test": "^1.5.0"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "polka": "^0.5.2"
+  }
+}

@@ -94,7 +94,8 @@ function fetchEvents(ID_TOKEN, REFRESH_TOKEN, cb) {
 			requests.push(axios.post(`https://vscode-google-calendar.herokuapp.com/events?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}`, {
 				calendarId: calendarId,
 				days: daysToFetch,
-				currentDate: new Date().toISOString()
+				currentDate: new Date().toISOString(),
+				timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
 			}))
 
 		})
@@ -144,11 +145,11 @@ function fetchEvents(ID_TOKEN, REFRESH_TOKEN, cb) {
 
 }
 
-function showMeetingMsg(link, title) {
+function showMeetingMsg(link, title, from, to) {
 
 	if (link)
 		vscode.window
-			.showInformationMessage('You have an Event: ' + title, ...['Join Meeting'])
+			.showInformationMessage('You have an Event: ' + title + ` Time: ${from}-${to}`, ...['Join Meeting'])
 			.then(selection => {
 				if (selection == 'Join Meeting') {
 					vscode.commands.executeCommand(
@@ -158,7 +159,7 @@ function showMeetingMsg(link, title) {
 				}
 			});
 	else
-		vscode.window.showInformationMessage('You have an Event: ' + title)
+		vscode.window.showInformationMessage('You have an Event: ' + title + ` Time: ${from}-${to}`)
 }
 
 function eventsQueue() {
@@ -182,23 +183,46 @@ function eventsQueue() {
 	nextEventTime = new Date(nextEventTime).getTime()
 	nextEventEndTime = new Date(nextEventEndTime).getTime()
 
+
 	let timeNow = new Date().getTime()
+	if (nextEventTime < timeNow && nextEventEndTime > timeNow) {
+		const from = new Date(nextEvent.start.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+		const to = new Date(nextEvent.end.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+		showMeetingMsg(nextEvent.hangoutLink, nextEvent.summary, from, to)
+		events[currentDateFormatted].splice(0, 1)
+		setTimeout(() => {
+
+			eventsQueue();
+		}, nextEventEndTime - timeNow)
+		return
+	}
 
 	let meetingTime = nextEventTime - timeNow
 
 	startTimeout = setTimeout(() => {
 		clearTimeout(startTimeout)
 		events[currentDateFormatted].splice(0, 1)
-		showMeetingMsg(link, nextEvent.summary)
+		const from = new Date(nextEvent.start.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+		const to = new Date(nextEvent.end.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+		showMeetingMsg(link, nextEvent.summary, from, to)
 		eventsQueue()
 	}, meetingTime)
 
 	let reminderTime = 5 //5 mins
+
+	let mettingInLessThenReminderTime = (new Date(meetingTime).getMinutes() < reminderTime) && (meetingTime > 0)
+	let reminderTimeRemaining = nextEventTime - new Date(new Date().getTime() + (reminderTime * 60000)).getTime()
+
 	upcomingTimeout = setTimeout(() => {
+		const meetingIn = Math.ceil((new Date(nextEventTime).getTime()-new Date().getTime())/60000)
 		vscode.window.showInformationMessage(`You have an Event: ${nextEvent.summary} in 
-		${new Date(meetingTime).getMinutes()} mins`)
+			${meetingIn} mins`)
 		clearTimeout(upcomingTimeout)
-	}, (new Date(meetingTime).getMinutes() < reminderTime && new Date(meetingTime).getMinutes() > 0) ? 0 : nextEventTime - new Date(new Date().getTime() + (reminderTime * 60000)))
+	}, (mettingInLessThenReminderTime ? 0 : reminderTimeRemaining))
+
+
 }
 
 function syncEvents(ID_TOKEN, REFRESH_TOKEN) {
@@ -220,9 +244,9 @@ function fetchCalendars(ID_TOKEN, REFRESH_TOKEN, cb) {
 	if (calendars.length) return cb(calendars)
 	axios.get(`https://vscode-google-calendar.herokuapp.com/calendar-list?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}`).then(res => {
 		calendars = res.data.calendarIds
+		console.log(calendars)
 		cb(calendars)
 	}).catch(err => {
-		console.error(err)
 		if (err.response.status === 403) {
 			auth()
 		} else

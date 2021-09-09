@@ -1,6 +1,6 @@
 {
   "name": "google-calendar-inegration",
-  "displayName": "VsCode Google Calendar ",
+  "displayName": "VSCode Google Calendar ",
   "description": "It allows to you to sync your google calendar with VS Code",
   "publisher": "RigRex",
   "icon": "images/icon.png",

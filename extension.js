@@ -11,6 +11,7 @@ let startTimeout, upcomingTimeout, timeRemainingTimeout;
 let calendars = []
 let currentDate = new Date()
 var options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+let ID_TOKEN = '',REFRESH_TOKEN = '';
 const daysToFetch = 7
 const currentDateFormatted = currentDate
 	.toLocaleDateString('en-US', options)
@@ -24,10 +25,10 @@ function activate(context) {
 
 	TokenManager.globalState = context.globalState
 	// TokenManager.setToken('', '', '')
-
-
-	let ID_TOKEN = TokenManager.getToken().ID_TOKEN_KEY
-	let REFRESH_TOKEN = TokenManager.getToken().REFRESH_TOKEN_KEY
+	
+	
+	ID_TOKEN = TokenManager.getToken().ID_TOKEN_KEY
+	 REFRESH_TOKEN = TokenManager.getToken().REFRESH_TOKEN_KEY
 
 	toggleBtn = vscode
 		.window.
@@ -244,7 +245,6 @@ function fetchCalendars(ID_TOKEN, REFRESH_TOKEN, cb) {
 	if (calendars.length) return cb(calendars)
 	axios.get(`https://vscode-google-calendar.herokuapp.com/calendar-list?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}`).then(res => {
 		calendars = res.data.calendarIds
-		console.log(calendars)
 		cb(calendars)
 	}).catch(err => {
 		if (err.response.status === 403) {
@@ -266,8 +266,8 @@ function auth() {
 		authenticate(() => {
 
 			// ACCESS_TOKEN = TokenManager.getToken().ACCESS_TOKEN_KEY
-			let ID_TOKEN = TokenManager.getToken().ID_TOKEN_KEY
-			let REFRESH_TOKEN = TokenManager.getToken().REFRESH_TOKEN_KEY
+			ID_TOKEN = TokenManager.getToken().ID_TOKEN_KEY
+			REFRESH_TOKEN = TokenManager.getToken().REFRESH_TOKEN_KEY
 			syncEvents(ID_TOKEN, REFRESH_TOKEN)
 		});
 	} catch (err) {

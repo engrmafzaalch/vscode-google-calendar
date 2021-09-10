@@ -10,6 +10,17 @@ VsCode Google Calendar Extension helps allows you to sync your google calendar w
 
 ## Features
 
+### Sync Calendar
+![img](/images/readme/sync.png)
+
+### Get Event Reminder
+![img](/images/readme/reminder.png)
+
+### Get Event List
+![img](/images/readme/list.png)
+
+### Join Event directly 
+![img](/images/readme/join.png)
 
 
 ## Extension Settings
@@ -23,24 +34,25 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 Users appreciate release notes as you update your extension.
 
-### 1.0.0
+### 0.0.1
 
 Initial release of ...
 
-### 1.0.1
+### 0.0.2
 
-Fixed issue #.
+Bug Fixes
 
-### 1.1.0
+### 0.0.4
 
-Added features X, Y, and Z.
+Bug Fixes
+
+### 0.0.5
+
+Bug Fixes
+Added Feature Google Calendar Event List on activity bar
+
 
 -----------------------------------------------------------------------------------------------------------
 
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**

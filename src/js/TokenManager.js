@@ -6,9 +6,10 @@ const REFRESH_TOKEN_KEY = "vs-gcalendar-refresh";
 
 class TokenManager {
   static globalState
-
+  
   static setToken(accessToken, idToken, refreshToken) {
     return new Promise((resolve, reject)=>{
+      console.log('setToken', accessToken, idToken, refreshToken)
       this.globalState.update(ACCESS_TOKEN_KEY, accessToken);
       this.globalState.update(ID_TOKEN_KEY, idToken);
       this.globalState.update(REFRESH_TOKEN_KEY, refreshToken);

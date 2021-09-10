@@ -2,8 +2,33 @@
 
 All notable changes to the "google-calendar-inegration" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## Known Issues
 
-## [Unreleased]
+Calling out known issues can help limit users opening duplicate issues against your extension.
 
-- Initial release
+## Release Notes
+
+Users appreciate release notes as you update your extension.
+
+### 0.0.1
+
+Initial release of ...
+
+### 0.0.2
+
+Bug Fixes
+
+### 0.0.4
+
+Bug Fixes
+
+### 0.0.5
+
+Bug Fixes
+Added Feature Google Calendar Event List on activity bar
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+**Enjoy!**

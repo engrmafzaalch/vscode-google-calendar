@@ -9,7 +9,6 @@ class TokenManager {
   
   static setToken(accessToken, idToken, refreshToken) {
     return new Promise((resolve, reject)=>{
-      console.log('setToken', accessToken, idToken, refreshToken)
       this.globalState.update(ACCESS_TOKEN_KEY, accessToken);
       this.globalState.update(ID_TOKEN_KEY, idToken);
       this.globalState.update(REFRESH_TOKEN_KEY, refreshToken);
@@ -20,9 +19,9 @@ class TokenManager {
 
   static getToken() {
     return {
-      ACCESS_TOKEN_KEY: this.globalState.get(ACCESS_TOKEN_KEY),
-      ID_TOKEN_KEY: this.globalState.get(ID_TOKEN_KEY),
-      REFRESH_TOKEN_KEY: this.globalState.get(REFRESH_TOKEN_KEY)
+      [ACCESS_TOKEN_KEY]: this.globalState.get(ACCESS_TOKEN_KEY),
+      [ID_TOKEN_KEY]: this.globalState.get(ID_TOKEN_KEY),
+      [REFRESH_TOKEN_KEY]: this.globalState.get(REFRESH_TOKEN_KEY)
     };
   }
 

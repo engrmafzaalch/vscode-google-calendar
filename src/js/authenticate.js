@@ -3,6 +3,7 @@ const polka = require("polka");
 const TokenManager = require("./TokenManager");
 
 module.exports = (fn) => {
+
     const app = polka();
     app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', '*')
@@ -11,6 +12,8 @@ module.exports = (fn) => {
         next();
 
     })
+    
+
     app.get(`/auth`, async (req, res, next) => {
         const accessToken = req.query.accessToken;
         const idToken = req.query.idToken;
@@ -29,7 +32,6 @@ module.exports = (fn) => {
 
 
     });
-
     app.listen(54321, (err) => {
         if (err) {
             vscode.window.showErrorMessage(err.message);
@@ -37,8 +39,7 @@ module.exports = (fn) => {
             vscode.commands.executeCommand(
                 "vscode.open",
                 // vscode.Uri.parse(`http://localhost:8080/auth`)
-                vscode.Uri.parse(`https://light-haven-315312.web.app/auth`)
-
+                vscode.Uri.parse(`https://light-haven-315312.web.app/auth`),
                 
             );
         }

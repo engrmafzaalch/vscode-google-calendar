@@ -27,6 +27,14 @@ Bug Fixes
 Bug Fixes
 Added Feature Google Calendar Event List on activity bar
 
+### 0.0.6
+
+Login issue resolved
+
+### 0.0.7
+
+Typo issue resolved and token issue resolved
+
 
 -----------------------------------------------------------------------------------------------------------
 

@@ -8,7 +8,7 @@
     "type": ".git",
     "url": "https://github.com/engrmafzaalch/vscode-google-calendar.git"
   },
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.56.0"
   },
@@ -51,7 +51,6 @@
   },
   "contributes": {
     "views": {
-   
       "events-panel": [
         {
           "id": "upcoming-events",

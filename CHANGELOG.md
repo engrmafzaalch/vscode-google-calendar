@@ -35,6 +35,10 @@ Login issue resolved
 
 Typo issue resolved and token issue resolved
 
+### 0.0.8
+
+Added support for public holidays
+
 
 -----------------------------------------------------------------------------------------------------------
 

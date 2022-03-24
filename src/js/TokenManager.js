@@ -17,6 +17,16 @@ class TokenManager {
    
   }
 
+  static removeTokens() {
+    return new Promise((resolve, reject)=>{
+      this.globalState.update(ACCESS_TOKEN_KEY, null);
+      this.globalState.update(ID_TOKEN_KEY, null);
+      this.globalState.update(REFRESH_TOKEN_KEY, null);
+      resolve();
+    })
+   
+  }
+
   static getToken() {
     return {
       [ACCESS_TOKEN_KEY]: this.globalState.get(ACCESS_TOKEN_KEY),

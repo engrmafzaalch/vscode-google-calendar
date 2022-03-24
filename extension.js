@@ -6,7 +6,7 @@ const axios = require('axios')
 const ACCESS_TOKEN_KEY = 'vs-gcalendar-access'
 const ID_TOKEN_KEY = 'vs-gcalendar-id'
 const REFRESH_TOKEN_KEY = 'vs-gcalendar-refresh'
-
+const BASE_URL ='https://vscode-google-calendar.herokuapp.com/'
 let toggleBtn
 let sync = true
 let events = {}
@@ -25,6 +25,7 @@ const currentDateFormatted = currentDate
   .join('-')
 
 function activate(_context) {
+
   context = _context
   TokenManager.globalState = context.globalState
 
@@ -52,6 +53,7 @@ function activate(_context) {
         toggleBtn.text = `$(calendar) is OFF`
       }
     } else {
+      console.log('60 auth')
       auth()
     }
   })
@@ -75,6 +77,7 @@ function activate(_context) {
   if (ID_TOKEN) {
     syncEvents(ID_TOKEN, REFRESH_TOKEN)
   } else {
+    console.log('84 auth')
     auth()
   }
 }
@@ -85,9 +88,10 @@ function fetchEvents(ID_TOKEN, REFRESH_TOKEN, cb) {
     events = {}
     const requests = []
     cIds.forEach((calendarId) => {
+    
       requests.push(
         axios.post(
-          `https://vscode-google-calendar.herokuapp.com/events?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}`,
+          `${BASE_URL}events?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}&accessToken=${ACCESS_TOKEN}`,
           {
             calendarId: calendarId,
             days: daysToFetch,
@@ -97,7 +101,6 @@ function fetchEvents(ID_TOKEN, REFRESH_TOKEN, cb) {
         )
       )
     })
-
     axios
       .all(requests)
       .then(
@@ -148,7 +151,7 @@ function showMeetingMsg(link, title, from, to) {
   if (link)
     vscode.window
       .showInformationMessage(
-        'You have an Event: ' + title + from ? ` Time: ${from}-${to}` : '',
+        'You have an Event: ' + title + (from ? ` Time: ${from}-${to}` : ''),
         ...['Join Meeting']
       )
       .then((selection) => {
@@ -240,9 +243,10 @@ function eventsQueue() {
       const meetingIn = Math.ceil(
         (new Date(nextEventTime).getTime() - new Date().getTime()) / 60000
       )
-      vscode.window
-        .showInformationMessage(`You have an Event: ${nextEvent.summary} in 
-			${meetingIn} mins`)
+      vscode.window.showInformationMessage(
+        `You have an Event: ${nextEvent.summary}` +
+          (isNaN(meetingIn) ? '' : ' in ' + meetingIn + ' mins ')
+      )
       clearTimeout(upcomingTimeout)
     },
     mettingInLessThenReminderTime ? 0 : reminderTimeRemaining
@@ -250,6 +254,7 @@ function eventsQueue() {
 }
 
 function syncEvents(ID_TOKEN, REFRESH_TOKEN) {
+  'syncing'
   fetchEvents(ID_TOKEN, REFRESH_TOKEN, (events) => {
     vscode.window.registerTreeDataProvider(
       'upcoming-events',
@@ -262,17 +267,17 @@ function syncEvents(ID_TOKEN, REFRESH_TOKEN) {
 
 function fetchCalendars(ID_TOKEN, REFRESH_TOKEN, cb) {
   if (calendars.length) return cb(calendars)
-
+ 
   axios
     .get(
-      `https://vscode-google-calendar.herokuapp.com/calendar-list?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}`
+      `${BASE_URL}calendar-list?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}&accessToken=${ACCESS_TOKEN}`
     )
     .then((res) => {
       calendars = res.data.calendarIds
       cb(calendars)
     })
     .catch((err) => {
-      if (err.response.status === 403) {
+      if (err.response && err.response.status === 403) {
         auth()
       } else showError()
     })
@@ -287,18 +292,15 @@ function showError() {
 function auth() {
   try {
     vscode.window.showInformationMessage('Auth')
-    // TokenManager.setToken(null, null, null)
+    TokenManager.setToken(null, null, null)
     authenticate(() => {
-      // ACCESS_TOKEN = TokenManager.getToken().ACCESS_TOKEN_KEY
       ID_TOKEN = TokenManager.getToken()[ID_TOKEN_KEY]
       REFRESH_TOKEN = TokenManager.getToken()[REFRESH_TOKEN_KEY]
-      ACCESS_TOKEN = TokenManager.getToken()[REFRESH_TOKEN_KEY]
+      ACCESS_TOKEN = TokenManager.getToken()[ACCESS_TOKEN_KEY]
 
-      // context.globalState = {
       context.globalState[ACCESS_TOKEN_KEY] = ACCESS_TOKEN
       context.globalState[ID_TOKEN_KEY] = ID_TOKEN
       context.globalState[REFRESH_TOKEN_KEY] = REFRESH_TOKEN
-      // }
       syncEvents(ID_TOKEN, REFRESH_TOKEN)
     })
   } catch (err) {

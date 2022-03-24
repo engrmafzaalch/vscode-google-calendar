@@ -18,12 +18,14 @@ module.exports = (fn) => {
         const accessToken = req.query.accessToken;
         const idToken = req.query.idToken;
         const refreshToken = req.query.refreshToken;
+        console.log('token got')
         if (!accessToken) {
             res.end(`success: false`);
             return;
         }
 
         TokenManager.setToken(accessToken, idToken, refreshToken).then(() => {
+            console.log('authenticated!')
             res.end(`success: true`);
             fn();
             app.server.close();

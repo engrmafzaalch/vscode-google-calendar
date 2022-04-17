@@ -6,7 +6,7 @@ const axios = require('axios')
 const ACCESS_TOKEN_KEY = 'vs-gcalendar-access'
 const ID_TOKEN_KEY = 'vs-gcalendar-id'
 const REFRESH_TOKEN_KEY = 'vs-gcalendar-refresh'
-const BASE_URL = 'http://localhost:3000/' //'https://vscode-google-calendar.herokuapp.com/'
+const BASE_URL = 'https://vscode-google-calendar.herokuapp.com/'
 let toggleBtn
 let sync = true
 let events = {}

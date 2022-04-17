@@ -1,12 +1,12 @@
 const vscode = require('vscode')
-const authenticate = require('./src/js/authenticate')
+const { authenticate, renewTokens } = require('./src/js/authenticate')
 const TokenManager = require('./src/js/TokenManager')
 const { TreeDataProvider } = require('./src/js/TreeController')
 const axios = require('axios')
 const ACCESS_TOKEN_KEY = 'vs-gcalendar-access'
 const ID_TOKEN_KEY = 'vs-gcalendar-id'
 const REFRESH_TOKEN_KEY = 'vs-gcalendar-refresh'
-const BASE_URL ='https://vscode-google-calendar.herokuapp.com/'
+const BASE_URL = 'http://localhost:3000/' //'https://vscode-google-calendar.herokuapp.com/'
 let toggleBtn
 let sync = true
 let events = {}
@@ -25,13 +25,14 @@ const currentDateFormatted = currentDate
   .join('-')
 
 function activate(_context) {
-
   context = _context
   TokenManager.globalState = context.globalState
 
   ID_TOKEN = TokenManager.getToken()[ID_TOKEN_KEY]
   REFRESH_TOKEN = TokenManager.getToken()[REFRESH_TOKEN_KEY]
   ACCESS_TOKEN = TokenManager.getToken()[ACCESS_TOKEN_KEY]
+  console.log(REFRESH_TOKEN)
+  console.log(ACCESS_TOKEN)
 
   toggleBtn = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
@@ -88,7 +89,6 @@ function fetchEvents(ID_TOKEN, REFRESH_TOKEN, cb) {
     events = {}
     const requests = []
     cIds.forEach((calendarId) => {
-    
       requests.push(
         axios.post(
           `${BASE_URL}events?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}&accessToken=${ACCESS_TOKEN}`,
@@ -267,7 +267,7 @@ function syncEvents(ID_TOKEN, REFRESH_TOKEN) {
 
 function fetchCalendars(ID_TOKEN, REFRESH_TOKEN, cb) {
   if (calendars.length) return cb(calendars)
- 
+
   axios
     .get(
       `${BASE_URL}calendar-list?idToken=${ID_TOKEN}&refreshToken=${REFRESH_TOKEN}&accessToken=${ACCESS_TOKEN}`
@@ -289,20 +289,46 @@ function showError() {
   )
 }
 
-function auth() {
-  try {
-    vscode.window.showInformationMessage('Auth')
-    TokenManager.setToken(null, null, null)
-    authenticate(() => {
+function renewAuthTokens(cb) {
+  renewTokens(BASE_URL, REFRESH_TOKEN, (success)=>{
+    if(success){
+
       ID_TOKEN = TokenManager.getToken()[ID_TOKEN_KEY]
       REFRESH_TOKEN = TokenManager.getToken()[REFRESH_TOKEN_KEY]
       ACCESS_TOKEN = TokenManager.getToken()[ACCESS_TOKEN_KEY]
-
+      
       context.globalState[ACCESS_TOKEN_KEY] = ACCESS_TOKEN
       context.globalState[ID_TOKEN_KEY] = ID_TOKEN
       context.globalState[REFRESH_TOKEN_KEY] = REFRESH_TOKEN
-      syncEvents(ID_TOKEN, REFRESH_TOKEN)
-    })
+      cb()
+    }else{
+      TokenManager.setToken(null, null, null)
+      auth()
+    }
+  })
+   
+}
+
+function auth() {
+  try {
+    vscode.window.showInformationMessage('Authenticating...')
+    if (REFRESH_TOKEN) {
+      renewAuthTokens(()=>{
+        syncEvents(ID_TOKEN, REFRESH_TOKEN)
+      })
+    } else {
+      TokenManager.setToken(null, null, null)
+      authenticate(() => {
+        ID_TOKEN = TokenManager.getToken()[ID_TOKEN_KEY]
+        REFRESH_TOKEN = TokenManager.getToken()[REFRESH_TOKEN_KEY]
+        ACCESS_TOKEN = TokenManager.getToken()[ACCESS_TOKEN_KEY]
+
+        context.globalState[ACCESS_TOKEN_KEY] = ACCESS_TOKEN
+        context.globalState[ID_TOKEN_KEY] = ID_TOKEN
+        context.globalState[REFRESH_TOKEN_KEY] = REFRESH_TOKEN
+        syncEvents(ID_TOKEN, REFRESH_TOKEN)
+      })
+    }
   } catch (err) {
     showError()
   }

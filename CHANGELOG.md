@@ -39,6 +39,10 @@ Typo issue resolved and token issue resolved
 
 Added support for public holidays
 
+### 0.1.1
+
+Fixed auth expiration
+
 
 -----------------------------------------------------------------------------------------------------------
 
